@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="200"
+		Width="450" Height="200"
+		xmlns:vm="using:desktop.ViewModels"
+		x:DataType="vm:AddNewNameForEntityViewModel"
+        x:Class="desktop.Views.AddNewNameForEntityWindow"
+		Topmost="True" Background="{StaticResource MainColor}"
+        Title="КДВ. Складской учет" Foreground="White"
+		Icon="/Assets/icon.ico" WindowStartupLocation="CenterScreen">
+	<StackPanel Orientation="Vertical" Spacing="20" 
+				Margin="10">
+		<TextBlock HorizontalAlignment="Center" Text="{Binding Title}">Пример</TextBlock>
+		<TextBox Watermark="Название"
+				 Text="{Binding Name}"></TextBox>
+		<Button HorizontalAlignment="Stretch" Classes="Login"
+				HorizontalContentAlignment="Center"
+				Command="{Binding SaveCommand}">Добавить</Button>
+		<Button HorizontalAlignment="Stretch" Command="{Binding Exit}"
+				Classes="Login"
+				HorizontalContentAlignment="Center">Закрыть</Button>
+	</StackPanel>
+</Window>

@@ -1,0 +1,203 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:desktop.ViewModels"
+			 xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             xmlns:material="using:Material.Icons.Avalonia"
+			 mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
+			 x:DataType="vm:ProductsViewModel"
+             x:Class="desktop.Views.ProductsView"
+			 FontFamily="{StaticResource CommissionerFont}"
+			 x:Name="ProductsUserControl">
+	<UserControl.Background>
+		<ImageBrush Source="/Assets/pattern.png"
+					 Opacity="0.27"></ImageBrush>
+	</UserControl.Background>
+	<Grid Margin="5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="*"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"></ColumnDefinition>
+			<ColumnDefinition Width="Auto"></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<StackPanel Grid.Row="1" ZIndex="1" HorizontalAlignment="Center"
+					VerticalAlignment="Center" IsVisible="{Binding IsEmptyProducts}">
+			<Image Width="100" Height="100" Source="/Assets/catalogempty.png"></Image>
+			<TextBlock FontSize="20">Таких товаров еще нет</TextBlock>
+		</StackPanel>
+		<StackPanel Grid.Column="1" VerticalAlignment="Bottom">
+			<Button Command="{Binding AddProduct}" Classes="Login"
+					IsVisible="{Binding $parent[Window].DataContext.IsStoreKeeper}">
+				<WrapPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="20" Height="20" Kind="Plus"></material:MaterialIcon>
+					<TextBlock>Новый товар</TextBlock>
+				</WrapPanel>
+			</Button>
+		</StackPanel>
+		<StackPanel Orientation="Vertical" Grid.ColumnSpan="2">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"></ColumnDefinition>
+					<ColumnDefinition Width="*"></ColumnDefinition>
+					<ColumnDefinition Width="Auto"></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+				<ToggleButton x:Name="CategoriesToggleButton" Classes="categories"
+							  Margin="5" Cursor="Hand">
+					<StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center" HorizontalAlignment="Center">
+						<material:MaterialIconExt Kind="Menu" Size="20"
+												></material:MaterialIconExt>
+						<TextBlock FontWeight="DemiBold" VerticalAlignment="Center"
+								   FontSize="15">КАТЕГОРИИ</TextBlock>
+					</StackPanel>
+				</ToggleButton>
+				<TextBox Classes="clearButton search" Watermark="Найти товар" Grid.Column="1"
+						 Text="{Binding OwnersParameters.SearchString}"
+						 HorizontalAlignment="Stretch" Margin="5,5,0,5"></TextBox>
+				<Button Command="{Binding Search}" IsEnabled="{Binding !IsSearch}" Grid.Column="2"
+						HorizontalAlignment="Stretch" Margin="0,5,5,5"
+						Classes="search">НАЙТИ</Button>
+			</Grid>
+			<Popup x:Name="CategoriesPopup" IsOpen="{Binding IsChecked, ElementName=CategoriesToggleButton, Mode=TwoWay}"
+				   PlacementTarget="{Binding ElementName=CategoriesToggleButton}" MaxWidth="1200" IsLightDismissEnabled="True"
+				   PlacementMode="BottomEdgeAlignedRight">
+				<Border Background="White" Padding="10">
+					<ListBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" Background="Transparent">
+						<ListBox.ItemsPanel>
+							<ItemsPanelTemplate>
+								<UniformGrid/>
+							</ItemsPanelTemplate>
+						</ListBox.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="40"/>
+										<ColumnDefinition Width="*"/>
+									</Grid.ColumnDefinitions>
+									<Grid.RowDefinitions>
+										<RowDefinition Height="40"/>
+									</Grid.RowDefinitions>
+									<Border Grid.Column="0" ClipToBounds="True" Width="40" Height="40" CornerRadius="10">
+										<asyncImageLoader:AdvancedImage Stretch="UniformToFill" Width="40" Height="40"
+											Source="{Binding Icon, Converter={StaticResource imageConv},TargetNullValue='/Assets/noimage.png'}" Name="imgProduct">
+										</asyncImageLoader:AdvancedImage>
+									</Border>
+									<Border ClipToBounds="True" IsVisible="{Binding #imgProduct.IsLoading, FallbackValue=True}"
+											Grid.Column="0" Width="40" Height="40" CornerRadius="10">
+										<ProgressBar Classes="loading" Width="40" Height="40"></ProgressBar>
+									</Border>
+									<TextBlock Grid.Column="1" Text="{Binding Name}" Margin="5,0,0,0"
+											   TextWrapping="WrapWithOverflow"/>
+								</Grid>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ListBox>
+				</Border>
+			</Popup>
+			<WrapPanel Orientation="Horizontal" Margin="10,0,0,0">
+				<TextBlock Text="{Binding CategoryName,StringFormat='{}{0} ', TargetNullValue='Все товары'}"
+						   FontSize="25" VerticalAlignment="Bottom">Все товары</TextBlock>
+				<TextBlock Text="{Binding CountProducts, StringFormat='{} {0} товара'}"
+						   VerticalAlignment="Bottom" FontSize="13"
+						   Foreground="Gray" FontWeight="DemiBold"></TextBlock>
+			</WrapPanel>
+			<WrapPanel Orientation="Horizontal" Margin="10,15,0,0">
+				<TextBlock VerticalAlignment="Center">Сортировка: </TextBlock>
+				<ComboBox Classes="sort" SelectedIndex="{Binding OwnersParameters.Sorts}"
+						  Background="Transparent" BorderBrush="Transparent" Cursor="Hand">
+					<ComboBoxItem>по возрастанию цены</ComboBoxItem>
+					<ComboBoxItem>по убыванию цены</ComboBoxItem>
+					<ComboBoxItem>по порядку</ComboBoxItem>
+				</ComboBox>
+			</WrapPanel>
+		</StackPanel>
+		<ScrollViewer x:Name="scrollViewerProducts" Grid.Row="1" ScrollChanged="ScrollViewer_ScrollChanged"
+					  Background="Transparent">
+			<ListBox ItemsSource="{Binding Products}" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+					 ScrollViewer.VerticalScrollBarVisibility="Visible" Classes="catalog"
+					 Background="Transparent">
+			<ListBox.ItemsPanel>
+				<ItemsPanelTemplate>
+					<UniformGrid ></UniformGrid>
+				</ItemsPanelTemplate>
+			</ListBox.ItemsPanel>
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<Grid>
+						<Button VerticalAlignment="Top" ZIndex="1" Command="{Binding $parent[UserControl].DataContext.RemoveProductCommand}"
+								CommandParameter="{Binding ProductId}"
+								IsVisible="{Binding $parent[Window].DataContext.IsStoreKeeper}"
+								HorizontalAlignment="Right" Classes="Login">
+							<material:MaterialIconExt Kind="DeleteCircle"
+																  Size="30"></material:MaterialIconExt>
+						</Button>
+						<StackPanel>
+							<Grid HorizontalAlignment="Center" Height="250" Width="287">
+								<Border ClipToBounds="True">
+									<asyncImageLoader:AdvancedImage Stretch="UniformToFill"
+										Source="{Binding Image, Converter={StaticResource imageConv},TargetNullValue='/Assets/noimage.png'}" Name="imgProduct"></asyncImageLoader:AdvancedImage>
+								</Border>
+								<Border ClipToBounds="True" IsVisible="{Binding #imgProduct.IsLoading, FallbackValue=True}">
+									<ProgressBar Classes="loading"></ProgressBar>
+								</Border>
+							</Grid>
+
+							<TextBlock TextAlignment="Center" Height="50" Margin="0,10,0,0"
+									   FontWeight="Bold"  TextTrimming="CharacterEllipsis"
+									   FontSize="16" Classes="HeaderProduct" TextWrapping="Wrap"
+									   Text="{Binding Name}"></TextBlock>
+							<TextBlock Text="{Binding PriceOfSale, StringFormat='{}{0} ₽'}"
+											   FontWeight="Bold" FontSize="18"></TextBlock>
+							<Button Classes="Login" Margin="5"
+								Command="{Binding $parent[UserControl].DataContext.EditProductCommand}"
+									CommandParameter="{Binding ProductId}"
+									IsVisible="{Binding $parent[Window].DataContext.IsStoreKeeper}">Редактировать</Button>
+						</StackPanel>	
+					</Grid>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>	
+	</ScrollViewer>
+		<Button Classes="Login" HorizontalAlignment="Stretch" Command="{Binding LoadMoreProducts}" Grid.Row="2"
+				HorizontalContentAlignment="Center" IsVisible="{Binding IsMoreProducts}">Показать ещё</Button>
+			<StackPanel Grid.Row="4" Spacing="10" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="20" Orientation="Horizontal">
+				<Button Command="{Binding GoFirstPage}" Name="skipPrvBtn" Classes="pagination">
+					<material:MaterialIconExt Size="25" Kind="ChevronDoubleLeft"></material:MaterialIconExt>
+				</Button>
+				<Button Command="{Binding PreviousPage}" Classes="pagination">
+						<material:MaterialIconExt Size="25" Kind="ChevronLeft"></material:MaterialIconExt>
+				</Button>
+				<NumericUpDown Minimum="1" Maximum="{Binding CountPage}" Value="{Binding OwnersParameters.PageNumber}" AllowSpin="False" ShowButtonSpinner="False"></NumericUpDown>
+				<TextBlock VerticalAlignment="Center" Text="{Binding CountPage, StringFormat='{}из {0}'}"></TextBlock>
+				<Button Classes="pagination" Command="{Binding NextPage}">
+						<material:MaterialIconExt Size="25" Kind="ChevronRight"></material:MaterialIconExt>
+				</Button>
+				<Button Command="{Binding GoLastPage}" Classes="pagination">
+					<material:MaterialIconExt Size="25" Kind="ChevronDoubleRight"></material:MaterialIconExt>
+				</Button>
+			</StackPanel>
+		<Button x:Name="buttonUp" Background="{StaticResource MainColor}" Grid.Column="1" Grid.Row="3" CornerRadius="100"
+				Width="40" Height="40" Foreground="White" IsVisible="False" Click="Button_Click" ZIndex="1">
+			<material:MaterialIconExt Size="25" Kind="ChevronUp"></material:MaterialIconExt>
+		</Button>
+	<!--Search and Filtering-->
+			<DockPanel Margin="20" VerticalAlignment="Top" Grid.Column="1" Grid.Row="1" Grid.RowSpan="4">
+				<TextBlock DockPanel.Dock="Top"
+						   FontSize="18" FontWeight="DemiBold" Margin="0,0,0,10">Фильтры</TextBlock>
+							<ScrollViewer  Width="350">
+								<ItemsControl ItemsSource="{Binding Filters}" ItemTemplate="{StaticResource filterCategoryTemplate}">
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<StackPanel Orientation="Vertical" Spacing="20"></StackPanel>
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+								</ItemsControl>
+						</ScrollViewer>
+			</DockPanel>
+	</Grid>
+</UserControl>

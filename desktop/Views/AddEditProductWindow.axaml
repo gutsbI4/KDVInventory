@@ -1,0 +1,271 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="5000"
+		xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+		xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+		xmlns:vm="using:desktop.ViewModels"
+		x:DataType="vm:AddEditProductViewModel" Width="800"
+        x:Class="desktop.Views.AddEditProductWindow"
+        Title="КДВ. Складской учет" SystemDecorations="None"
+		WindowStartupLocation="CenterOwner" Foreground="White"
+		TransparencyLevelHint="Transparent" Icon="/Assets/icon.ico">
+	<Border CornerRadius="10" Background="{StaticResource MainColor}">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<!-- Заголовок -->
+			<RowDefinition Height="*"/>
+			<!-- Содержимое -->
+		</Grid.RowDefinitions>
+
+		<!-- Заголовок -->
+		<TextBlock Grid.Row="0" Text="{Binding Title}" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Margin="10"/>
+
+		<!-- Кнопки -->
+		<StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Classes="Login" Name="AddButton" Content="{Binding ButtonSaveText}" Margin="10"
+					Command="{Binding SaveCommand}"/>
+			<Button Classes="Login" Name="CloseButton" Content="Закрыть" Margin="10"
+					Command="{Binding Exit}"/>
+		</StackPanel>
+
+		<!-- Основное содержимое -->
+		<ScrollViewer Grid.Row="1" Grid.ColumnSpan="2">
+			<Grid Margin="5">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" SharedSizeGroup="Labels"/>
+					<!-- Для меток -->
+					<ColumnDefinition Width="*"/>
+					<!-- Для элементов управления -->
+					<ColumnDefinition Width="*"/>
+					<!-- Для кнопки сгенерировать баркод -->
+				</Grid.ColumnDefinitions>
+
+				<!-- Добавляем строки по необходимости -->
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+
+				<!-- Штрихкод -->
+				<TextBlock Grid.Row="0" Grid.Column="0" Text="Штрихкод" VerticalAlignment="Center"
+						   Margin="5"/>
+				<NumericUpDown Grid.Row="0" Grid.Column="1" Margin="5" ValueChanged="NumericUpDown_ValueChanged"
+							   Value="{Binding Product.Barcode}" AllowSpin="False" ShowButtonSpinner="False" FormatString="0" VerticalAlignment="Center"/>
+				<Button Classes="Login" Grid.Row="0" Grid.Column="2" Name="Button_Barcode" Content="Создать штрихкод"
+						Command="{Binding GenerateBarcodeCommand}" Margin="5"/>
+
+				<TextBlock Grid.Row="1" Margin="5" FontWeight="Bold">Основное</TextBlock>
+				<!-- Наименование -->
+				<TextBlock Grid.Row="2" Grid.Column="0" Text="Наименование" VerticalAlignment="Center" Margin="5"/>
+				<TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Product.Name}" VerticalAlignment="Center"
+						 Margin="5"/>
+
+				<!-- Цена продажи -->
+				<TextBlock Grid.Row="3" Grid.Column="0" Text="Цена продажи (руб.)" VerticalAlignment="Center"
+						   Margin="5"/>
+				<NumericUpDown Grid.Row="3" Grid.Column="1" Name="PriceOfSale" Value="{Binding Product.PriceOfSale}"
+							   ShowButtonSpinner="False" VerticalAlignment="Center" Margin="5"
+							   FormatString="0.00"/>
+
+				<TextBlock Grid.Row="4" Grid.Column="0" TextWrapping="Wrap" Margin="5"
+						   >Минимальная цена <LineBreak/>продажи (руб.)</TextBlock>
+				<NumericUpDown Grid.Row="4" Grid.Column="1" ShowButtonSpinner="False" Value="{Binding Product.MinPriceOfSale}"
+							   FormatString="0.00" Margin="5"
+							></NumericUpDown>
+				<TextBlock Grid.Row="5" Grid.Column="0" Margin="5">
+					Закупочная цена (руб.)
+				</TextBlock>
+				<NumericUpDown ShowButtonSpinner="False" Grid.Row="5" Grid.Column="1"
+							   Value="{Binding Product.PurchasePrice}" Margin="5"
+							   FormatString="0.00"
+							   ></NumericUpDown>
+				<TextBlock Grid.Row="6" Margin="5">Цена за:</TextBlock>
+				<ComboBox ItemsSource="{Binding PriceUnits}" SelectedValueBinding="{Binding Id}" Grid.Row="6"
+						  Grid.Column="1" Margin="5" 
+						  SelectedValue="{Binding Product.PriceUnitId}" DisplayMemberBinding="{Binding Unit}"></ComboBox>
+				<Button Classes="Login" Grid.Row="6" Grid.Column="2" Margin="5"
+						Command="{Binding AddNewNameForEntityCommand}"
+						CommandParameter="Единица измерения">Добавить новую ед. изм.</Button>
+				<TextBlock Grid.Row="7" Margin="5">
+					Товар считать<LineBreak></LineBreak> заканчивающимся, если осталось меньше
+				</TextBlock>
+				<NumericUpDown Grid.Row="7" Grid.Column="1" ShowButtonSpinner="False" Value="{Binding Product.LowStockThreshold}"
+							   FormatString="0" Margin="5"
+						   ></NumericUpDown>
+				<TextBlock Grid.Row="8" FontWeight="Bold" Margin="5">Параметры</TextBlock>
+				<TextBlock Grid.Row="9" Margin="5">Артикул</TextBlock>
+				<TextBox Grid.Row="9" Grid.Column="1" Margin="5" Text="{Binding Product.ProductNumber}"
+						 ></TextBox>
+				<Button Classes="Login" Grid.Row="9" Grid.Column="2" Margin="5"
+						Command="{Binding GenerateArticleCommand}">Создать артикул</Button>
+				<TextBlock Grid.Row="10" Margin="5">Страна</TextBlock>
+				<TextBox Grid.Row="10" Margin="5" Grid.Column="1" Text="{Binding Product.Details.CountryOfProduction}"
+						 ></TextBox>
+				<TextBlock Grid.Row="11" Margin="5">Производитель</TextBlock>
+				<ComboBox ItemsSource="{Binding Manufacturers}" SelectedValueBinding="{Binding Id}"
+						  SelectedValue="{Binding Product.Details.ManufacturerId}"
+						  Grid.Row="11" Margin="5" Grid.Column="1" IsTextSearchEnabled="True"
+						  DisplayMemberBinding="{Binding Name}"
+					  ></ComboBox>
+				<Button Classes="Login" Grid.Row="11" Grid.Column="2" Margin="5"
+						Command="{Binding AddNewNameForEntityCommand}"
+						CommandParameter="Производитель">Добавить нового производителя</Button>
+				<TextBlock Grid.Row="12" Margin="5">Торговая марка</TextBlock>
+				<ComboBox ItemsSource="{Binding Brands}" Grid.Row="12" Margin="5" Grid.Column="1"
+						  SelectedValueBinding="{Binding BrandId}"
+						  SelectedValue="{Binding Product.Details.BrandId}"
+						  DisplayMemberBinding="{Binding Name}"
+						  ></ComboBox>
+				<Button Classes="Login" Grid.Row="12" Grid.Column="2" Margin="5"
+						Command="{Binding AddNewNameForEntityCommand}"
+						CommandParameter="Торговая марка">Добавить новую торг. марку</Button>
+				<TextBlock Grid.Row="13" Margin="5">Срок хранения (мес.)</TextBlock>
+				<NumericUpDown Minimum="1" Increment="1"
+							   FormatString="0" Grid.Row="13" Margin="5" Grid.Column="1"
+							   Value="{Binding Product.Details.ShelfLife}, TargetNullValue=1"
+						   ></NumericUpDown>
+				<TextBlock Grid.Row="14" Margin="5">Вес (кг.)</TextBlock>
+				<NumericUpDown Minimum="0.001" Increment="0.05" Grid.Row="14" Margin="5" Grid.Column="1"
+							   Value="{Binding Product.Details.Weight}, TargetNullValue=0.1"
+							   FormatString="0.000" ></NumericUpDown>
+				<TextBlock Grid.Row="15" Margin="5">Категория</TextBlock>
+				<ComboBox ItemsSource="{Binding Categories}" SelectedValueBinding="{Binding Id}"
+						  SelectedValue="{Binding Product.CategoryId}"  Grid.Row="15" Margin="5" Grid.Column="1"
+						  DisplayMemberBinding="{Binding Name}"
+					  ></ComboBox>
+				<TextBlock Grid.Row="16" Margin="5">Описание</TextBlock>
+				<TextBox MaxHeight="200" MaxWidth="500" Grid.Row="16" Grid.Column="1" HorizontalAlignment="Left"
+						 Text="{Binding Product.Description}" TextWrapping="Wrap"
+						 MinHeight="100" MinWidth="300" Margin="5"
+						></TextBox>
+				<TextBlock Grid.Row="17" Margin="5" FontWeight="Bold"
+						   >Изображения</TextBlock>
+				<Panel Grid.Row="18" Margin="5" Grid.ColumnSpan="2">
+					<Carousel Name="slides" ItemsSource="{Binding Product.ProductImage}">
+						<Carousel.PageTransition >
+							<CompositePageTransition>
+								<PageSlide Duration="0:00:01.500" Orientation="Horizontal" />
+							</CompositePageTransition>
+						</Carousel.PageTransition>
+						<Carousel.ItemTemplate>
+							<DataTemplate>
+								<Grid>
+								<Button Classes="Login" HorizontalAlignment="Right" VerticalAlignment="Top"
+										Command="{Binding $parent[Window].DataContext.RemoveImageCommand}" 
+										ZIndex="1"
+									CommandParameter="{Binding ImageId}">
+									<materialIcons:MaterialIcon Width="30" Height="30"
+									VerticalAlignment="Center" Kind="Delete"></materialIcons:MaterialIcon>
+								</Button>
+								<asyncImageLoader:AdvancedImage Stretch="UniformToFill" Height="400" Width="400"
+								Source="{Binding Path,Converter={StaticResource imageConv},
+								TargetNullValue='/Assets/noimage.png'}" ZIndex="0"/>
+								</Grid>
+							</DataTemplate>
+						</Carousel.ItemTemplate>
+					</Carousel>
+					<Panel Margin="20">
+						<Button Classes="Login" Click="Previous">&lt;</Button>
+						<Button Classes="Login" Click="Next"
+								HorizontalAlignment="Right">&gt;</Button>
+					</Panel>
+				</Panel>
+				<Button Classes="Login" Grid.Row="18" Grid.Column="2" Margin="5"
+						Command="{Binding AddImageProductCommand}">Добавить изображение</Button>
+				<TextBlock Grid.Row="19" Margin="5" FontWeight="Bold">Дополнительные параметры</TextBlock>
+				<TextBlock Grid.Row="20" Margin="5">Упаковка</TextBlock>
+				<ComboBox ItemsSource="{Binding Packages}" SelectedValueBinding="{Binding PackageId}"
+						  SelectedValue="{Binding Product.Details.PackageId}"
+					  Grid.Row="20" Margin="5" Grid.Column="1"
+						  DisplayMemberBinding="{Binding Name}"></ComboBox>
+				<Button Classes="Login" Grid.Row="20" Grid.Column="2" Margin="5"
+						Command="{Binding AddNewNameForEntityCommand}"
+						CommandParameter="Упаковка">Добавить новую упаковку</Button>
+				<TextBlock Grid.Row="21" Margin="5">Вид</TextBlock>
+				<ComboBox ItemsSource="{Binding Types}" SelectedValueBinding="{Binding TypeId}"
+						  SelectedValue="{Binding Product.Details.TypeId}"
+						Grid.Row="21" Margin="5" Grid.Column="1"
+						  DisplayMemberBinding="{Binding Name}"></ComboBox>
+				<Button Classes="Login" Grid.Row="21" Grid.Column="2" Margin="5"
+						Command="{Binding AddNewNameForEntityCommand}"
+						CommandParameter="Вид">Добавить новый вид</Button>
+				<TextBlock Grid.Row="22" Margin="5">Вкус</TextBlock>
+				<ComboBox ItemsSource="{Binding Tastes}" SelectedValueBinding="{Binding TasteId}"
+						  SelectedValue="{Binding Product.Details.TasteId}"
+						  Grid.Row="22" Margin="5" Grid.Column="1"
+						  DisplayMemberBinding="{Binding Name}"></ComboBox>
+				<Button Classes="Login" Grid.Row="22" Grid.Column="2" Margin="5"
+						Command="{Binding AddNewNameForEntityCommand}"
+						CommandParameter="Вкус">Добавить новый вкус</Button>
+				<TextBlock Grid.Row="23" Margin="5">Начинка</TextBlock>
+				<ComboBox ItemsSource="{Binding Fillings}" SelectedValueBinding="{Binding FillingId}"
+						  SelectedValue="{Binding Product.Details.FillingId}"
+						  Grid.Row="23" Margin="5" Grid.Column="1"
+						  DisplayMemberBinding="{Binding Name}"></ComboBox>
+				<Button Classes="Login" Grid.Row="23" Grid.Column="2" Margin="5"
+						Command="{Binding AddNewNameForEntityCommand}"
+						CommandParameter="Начинка">Добавить новую начинку</Button>
+				<TextBlock Grid.Row="24" Margin="5">Диета</TextBlock>
+				<ComboBox ItemsSource="{Binding Diets}" SelectedValueBinding="{Binding DietId}"
+						  SelectedValue="{Binding Product.Details.DietId}"
+					  Grid.Row="24" Margin="5" Grid.Column="1"
+						  DisplayMemberBinding="{Binding Name}"></ComboBox>
+				<Button Classes="Login" Grid.Row="24" Grid.Column="2" Margin="5"
+						Command="{Binding AddNewNameForEntityCommand}"
+						CommandParameter="Диета">Добавить новую диету</Button>
+				<TextBlock Grid.Row="25" Margin="5" FontWeight="Bold">Энергетическая ценность на 100 г</TextBlock>
+				<StackPanel Orientation="Vertical" Grid.Row="26" Margin="5">
+					<TextBlock>Белки (г.)</TextBlock>
+					<NumericUpDown Value="{Binding Product.Energy.Proteins}"
+								   ></NumericUpDown>
+				</StackPanel>
+				<StackPanel Margin="5" Orientation="Vertical" Grid.Row="28" Grid.Column="1">
+					<TextBlock>Жиры (г.)</TextBlock>
+					<NumericUpDown Value="{Binding Product.Energy.Fats}"
+								   ></NumericUpDown>
+				</StackPanel>
+				<StackPanel Margin="5" Orientation="Vertical" Grid.Row="28" Grid.Column="2">
+					<TextBlock>Углеводы (г.)</TextBlock>
+					<NumericUpDown Value="{Binding Product.Energy.Carbs}"
+								   ></NumericUpDown>
+				</StackPanel>
+				<StackPanel Margin="5" Orientation="Vertical" Grid.Row="29" Grid.Column="0">
+					<TextBlock>Калории (ккал.)</TextBlock>
+					<NumericUpDown Value="{Binding Product.Energy.Calories}"
+								   ></NumericUpDown>
+				</StackPanel>
+			</Grid>
+		</ScrollViewer>
+	</Grid>
+	</Border>
+</Window>

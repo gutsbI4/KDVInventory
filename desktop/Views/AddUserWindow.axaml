@@ -1,0 +1,134 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:desktop.ViewModels"
+		xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		x:DataType="vm:AddUserViewModel" MaxWidth="800"
+        x:Class="desktop.Views.AddUserWindow" WindowStartupLocation="CenterScreen"
+        Title="КДВ. Складской учет" BorderThickness="1" BorderBrush="Black" Foreground="White"
+		TransparencyLevelHint="Transparent" Topmost="True" SystemDecorations="None"
+		Icon="/Assets/icon.ico">
+	<Border CornerRadius="10" Background="{StaticResource MainColor}">
+		
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+
+		<TextBlock Grid.Row="0" Text="{Binding Title}" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Margin="10"/>
+
+		<StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Classes="Login" Name="AddButton" Content="{Binding ButtonSaveText}" Margin="10"
+					Command="{Binding SaveCommand}"/>
+			<Button Classes="Login" Name="CloseButton" Content="Закрыть" Margin="10"
+					Command="{Binding Exit}"/>
+		</StackPanel>
+
+		<ScrollViewer Grid.Row="1" Grid.ColumnSpan="2">
+			<Grid Margin="5">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" SharedSizeGroup="Labels"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+
+				<TextBlock Grid.Row="0" Margin="5" FontWeight="Bold">Основное</TextBlock>
+				<StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="20">
+					<TextBlock Text="{Binding TextBlockActiveText}"></TextBlock>
+					<Button Classes="Login" Content="{Binding ButtonActiveText}"
+						Command="{Binding ClickOnActiveButton}"></Button>
+				</StackPanel>
+				<TextBlock Grid.Row="1" Grid.Column="0" Text="Фамилия" VerticalAlignment="Center" Margin="5"/>
+				<TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"
+						 Margin="5" Text="{Binding User.Employee.Surname}"/>
+				<TextBlock Grid.Row="2" Grid.Column="0" Text="Имя" VerticalAlignment="Center" Margin="5"/>
+				<TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"
+						 Margin="5" Text="{Binding User.Employee.Name}"/>
+				<TextBlock Grid.Row="3" Grid.Column="0" Text="Отчество" VerticalAlignment="Center" Margin="5"/>
+				<TextBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center"
+						 Margin="5" Text="{Binding User.Employee.MiddleName}"/>
+				<TextBlock Grid.Row="4" FontWeight="Bold" Margin="5">Вход</TextBlock>
+				<TextBlock Grid.Row="5" Grid.Column="0" Text="Логин" VerticalAlignment="Center" Margin="5"/>
+				<TextBox Grid.Row="5" Grid.Column="1" VerticalAlignment="Center"
+						 Margin="5" Text="{Binding User.Login}"/>
+				<TextBlock Grid.Row="6" Grid.Column="0" Text="Пароль" IsVisible="{Binding IsAddUser}"
+						   VerticalAlignment="Center" Margin="5"/>
+				<TextBox Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" IsVisible="{Binding IsAddUser}"
+						 Margin="5" PasswordChar="*" Text="{Binding User.Password}"/>
+				<TextBlock Grid.Row="7" Grid.Column="0" Text="Подтвердите пароль"
+						   VerticalAlignment="Center" Margin="5" IsVisible="{Binding IsAddUser}"/>
+				<TextBox Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" IsVisible="{Binding IsAddUser}"
+						 Margin="5" PasswordChar="*" Text="{Binding ConfirmPasswordAdd}"/>
+				<Button Classes="Login" x:Name="ButtonChangePassword" Grid.Row="6" IsVisible="{Binding !IsAddUser}"
+						Command="{Binding ClickOnChangePassword}">Изменить пароль</Button>
+					<Popup Grid.Row="8" x:Name="ChangePasswordPopup" IsOpen="{Binding PopupChangePassOpen, Mode=TwoWay}"
+				   Placement="Center" Width="600"
+				   PlacementMode="Center">
+						<Border Background="Gray" CornerRadius="8">
+							<Grid>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto"></RowDefinition>
+									<RowDefinition Height="*"></RowDefinition>
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"></ColumnDefinition>
+									<ColumnDefinition Width="Auto"></ColumnDefinition>
+								</Grid.ColumnDefinitions>
+								<StackPanel Orientation="Horizontal" Margin="5,0,0,0" Spacing="5">
+									<materialIcons:MaterialIconExt Size="15"
+											Kind="KeyVariant"></materialIcons:MaterialIconExt>
+									<TextBlock HorizontalAlignment="Left"
+											   VerticalAlignment="Center">Изменение пароля</TextBlock>
+								</StackPanel>
+								<Button Grid.Column="1" Command="{Binding CloseChangePassword}">Закрыть</Button>
+								<StackPanel Grid.Row="1" Orientation="Vertical"
+											Grid.ColumnSpan="2" Margin="10" Spacing="5">
+									<TextBlock>Старый пароль</TextBlock>
+									<TextBox Watermark="Введите старый пароль" PasswordChar="*"
+											 Text="{Binding ChangePassword.OldPassword}"></TextBox>
+									<TextBlock>Новый пароль</TextBlock>
+									<TextBox Watermark="Введите новый пароль" PasswordChar="*"
+											 Text="{Binding ChangePassword.NewPassword}"></TextBox>
+									<TextBlock>Подтверждение</TextBlock>
+									<TextBox x:Name="ChangePassword" Watermark="Подтвердите новый пароль"
+											 PasswordChar="*" Text="{Binding ConfirmPassword}"></TextBox>
+									<WrapPanel HorizontalAlignment="Right">
+										<Button Command="{Binding CloseChangePassword}" Margin="0,0,10,0">Отмена</Button>
+										<Button Command="{Binding ChangePasswordCommand}">Сохранить</Button>
+									</WrapPanel>
+								</StackPanel>
+							</Grid>
+						</Border>
+					</Popup>
+				<TextBlock Grid.Row="9" FontWeight="Bold" Margin="5">Роль</TextBlock>
+				<ComboBox ItemsSource="{Binding Roles}" SelectedValueBinding="{Binding RoleId}"
+						  SelectedValue="{Binding User.RoleId}"  Grid.Row="10" Margin="5" Grid.Column="0"
+						  DisplayMemberBinding="{Binding Name}"
+					  ></ComboBox>
+				<TextBlock Grid.Row="11" Margin="5" FontWeight="Bold">Телефон</TextBlock>
+				<MaskedTextBox Grid.Row="11" Grid.Column="1" Text="{Binding User.Employee.PhoneNumber}"
+							   Margin="5" Mask="+7-000-000-0000"></MaskedTextBox>
+			</Grid>
+		</ScrollViewer>
+	</Grid>
+	</Border>
+</Window>

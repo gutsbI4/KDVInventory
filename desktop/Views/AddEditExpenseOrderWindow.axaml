@@ -1,0 +1,106 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:desktop.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="desktop.Views.AddEditExpenseOrderWindow" Width="900"
+		x:DataType="vm:AddEditExpenseOrderViewModel" SystemDecorations="None"
+        Title="КДВ. Складской учет" Icon="/Assets/icon.ico"
+		WindowStartupLocation="CenterScreen" Foreground="White"
+		TransparencyLevelHint="Transparent" >
+	<Border CornerRadius="10" Background="{StaticResource MainColor}">
+	<Grid Margin="5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<TextBlock FontWeight="Bold" FontSize="20">Списание товаров</TextBlock>
+		<StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="5">
+			<Button Classes="Login" Command="{Binding SaveCommand}" IsVisible="{Binding !ExpenseOrderEdit.IsExpense,FallbackValue=False}">Сохранить</Button>
+			<Button Classes="Login" Command="{Binding IssueExpense}" IsVisible="{Binding !ExpenseOrderEdit.IsExpense,FallbackValue=False}">Оформить списание</Button>
+			<Button Classes="Login" Command="{Binding CancelExpense}" IsVisible="{Binding ExpenseOrderEdit.IsExpense,FallbackValue=False}">Отменить списание</Button>
+			<Button Classes="Login" Command="{Binding Close}">Закрыть</Button>
+		</StackPanel>
+		<StackPanel Grid.Row="1" IsVisible="{Binding ExpenseOrderEdit.IsExpense,FallbackValue=False}" Spacing="10">
+			<TextBlock>
+				<TextBlock.Text>
+					<MultiBinding StringFormat="{}№{0} от {1}">
+						<Binding Path="ExpenseOrderEdit.Id"></Binding>
+						<Binding Path="ExpenseOrderEdit.DateOfCreate"></Binding>
+					</MultiBinding>
+				</TextBlock.Text>
+			</TextBlock>
+			<TextBlock Text="{Binding ExpenseOrderEdit.DateOfExpense,StringFormat={}Списан {0}}"></TextBlock>
+			<TextBlock Text="{Binding ExpenseOrderEdit.Employee,StringFormat={}Оформил: {0}}"></TextBlock>
+		</StackPanel>
+		<StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right"
+					IsVisible="{Binding ExpenseOrderEdit.IsExpense,FallbackValue=False}">
+			<SplitButton Classes="print" Content="Печать" Margin="7">
+				<SplitButton.Flyout>
+					<MenuFlyout>
+						<MenuItem Header="Накладная на списание" Command="{Binding PrintSpisanie}"></MenuItem>
+					</MenuFlyout>
+				</SplitButton.Flyout>
+			</SplitButton>
+		</StackPanel>
+		<DataGrid Grid.Row="2" Grid.ColumnSpan="2" AutoGenerateColumns="False" IsReadOnly="{Binding ExpenseOrderEdit.IsExpense}"
+				  ItemsSource="{Binding ExpenseOrderEdit.ExpenseOrderProduct}"
+				  Classes="DisableHoveringScrollBar">
+			<DataGrid.Columns>
+				<DataGridTextColumn IsReadOnly="True" Header="Артикул" Binding="{Binding Product.ProductNumber}"></DataGridTextColumn>
+				<DataGridTextColumn IsReadOnly="True" Header="Наименование" Binding="{Binding Product.Name}"></DataGridTextColumn>
+				<DataGridTextColumn Header="Цена" Binding="{Binding Price}"></DataGridTextColumn>
+				<DataGridTextColumn IsReadOnly="True" Header="Доступно" Binding="{Binding Product.Count}"></DataGridTextColumn>
+				<DataGridTextColumn Header="Кол-во" Binding="{Binding Quantity}"></DataGridTextColumn>	
+				<DataGridTextColumn IsReadOnly="True" Header="Сумма" Binding="{Binding Sum}"></DataGridTextColumn>
+				<DataGridTemplateColumn>
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Button Command="{Binding $parent[Window].DataContext.RemoveProductForExpense}" IsEnabled="{Binding !$parent[Window].DataContext.ExpenseOrderEdit.IsExpense}"
+									CommandParameter="{Binding $parent[DataGrid].SelectedItem}">Удалить</Button>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+			</DataGrid.Columns>
+		</DataGrid>
+		<StackPanel Grid.Row="3">
+			<TextBox Margin="10" x:Name="SearchTextBox" Watermark="Добавить позицию - введите наименование товара"
+					 Text="{Binding OwnersParameters.SearchString}" IsVisible="{Binding !ExpenseOrderEdit.IsExpense,FallbackValue=False}"></TextBox>
+			<Popup IsOpen="{Binding PopupSearchProductOpen, Mode=TwoWay}"
+				   PlacementTarget="{Binding ElementName=SearchTextBox}"
+				Placement="Bottom">
+				<ListBox ItemsSource="{Binding Products}" SelectionMode="Single"
+						 SelectedItem="{Binding AddedProduct}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+								<TextBlock>
+									<TextBlock.Text>
+										<MultiBinding StringFormat="{}{0} {1} {2}">
+											<Binding Path="Name"></Binding>
+											<Binding Path="PriceOfSale"></Binding>
+											<Binding Path="Count"></Binding>
+										</MultiBinding>
+									</TextBlock.Text>
+								</TextBlock>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</Popup>
+			<TextBlock Text="{Binding ExpenseOrderEdit.Total,StringFormat={}Итоговая сумма по документу: {0} руб.}"></TextBlock>
+			<Label FontWeight="Bold">Причина</Label>
+			<TextBox Text="{Binding ExpenseOrderEdit.Commentary}"
+					 TextWrapping="Wrap" MaxHeight="200" MinHeight="100"></TextBox>
+			<Button Classes="Login" IsVisible="{Binding ExpenseOrderEdit.IsExpense,FallbackValue=False}"
+					Command="{Binding IssueExpense}">Сохранить комментарий</Button>
+		</StackPanel>
+
+	</Grid>
+	</Border>
+</Window>

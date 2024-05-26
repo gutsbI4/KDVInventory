@@ -1,0 +1,109 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:desktop.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="desktop.Views.AddEditReceiptOrderWindow"
+		x:DataType="vm:AddEditReceiptOrderViewModel" Width="900"
+        Title="КДВ. Складской учет" SystemDecorations="None"
+		WindowStartupLocation="CenterScreen" Foreground="White"
+		TransparencyLevelHint="Transparent" Icon="/Assets/icon.ico">
+	<Border CornerRadius="10" Background="{StaticResource MainColor}">
+	<Grid Margin="5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<TextBlock FontWeight="Bold" FontSize="20">Приход товаров</TextBlock>
+		<StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="5">
+			<Button Classes="Login" Command="{Binding SaveCommand}" IsVisible="{Binding !ReceiptOrderEdit.IsReceipt,FallbackValue=False}">Сохранить</Button>
+			<Button Classes="Login" Command="{Binding IssueReceipt}" IsVisible="{Binding !ReceiptOrderEdit.IsReceipt,FallbackValue=False}">Оформить приход</Button>
+			<Button Classes="Login" Command="{Binding CancelReceipt}" IsVisible="{Binding ReceiptOrderEdit.IsReceipt,FallbackValue=False}">Отменить приход</Button>
+			<Button Classes="Login" Command="{Binding Close}">Закрыть</Button>
+		</StackPanel>
+		<StackPanel Grid.Row="1" IsVisible="{Binding ReceiptOrderEdit.IsReceipt,FallbackValue=False}" Spacing="10">
+			<TextBlock>
+				<TextBlock.Text>
+					<MultiBinding StringFormat="{}№{0} от {1}">
+						<Binding Path="ReceiptOrderEdit.Id"></Binding>
+						<Binding Path="ReceiptOrderEdit.DateOfCreate"></Binding>
+					</MultiBinding>
+				</TextBlock.Text>
+			</TextBlock>
+			<TextBlock Text="{Binding ReceiptOrderEdit.DateOfReceipt,StringFormat={}Оприходован {0}}"></TextBlock>
+			<TextBlock Text="{Binding ReceiptOrderEdit.Employee,StringFormat={}Оформил: {0}}"></TextBlock>
+		</StackPanel>
+		<StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right"
+					IsVisible="{Binding ReceiptOrderEdit.IsReceipt,FallbackValue=False}">
+			<SplitButton Classes="print" Content="Печать" Margin="7">
+				<SplitButton.Flyout>
+					<MenuFlyout>
+						<MenuItem Header="Накладная на приход" Command="{Binding PrintPrihod}"></MenuItem>
+					</MenuFlyout>
+				</SplitButton.Flyout>
+			</SplitButton>
+		</StackPanel>
+			<DataGrid Grid.Row="2" Grid.ColumnSpan="2" AutoGenerateColumns="False" IsReadOnly="{Binding ReceiptOrderEdit.IsReceipt}"
+					  ItemsSource="{Binding ReceiptOrderEdit.ReceiptOrderProduct}"
+					  Classes="DisableHoveringScrollBar">
+				<DataGrid.Columns>
+					<DataGridTextColumn IsReadOnly="True" Header="Артикул" Binding="{Binding Product.ProductNumber}"></DataGridTextColumn>
+					<DataGridTextColumn IsReadOnly="True" Header="Наименование" Binding="{Binding Product.Name}"></DataGridTextColumn>
+					<DataGridTextColumn Header="Кол-во" Binding="{Binding Quantity}"></DataGridTextColumn>
+					<DataGridTextColumn Header="Цена закупки" Binding="{Binding PurchasePrice}"></DataGridTextColumn>
+					<DataGridTextColumn IsReadOnly="True" Header="Сумма" Binding="{Binding Sum}"></DataGridTextColumn>
+					<DataGridTextColumn Header="Цена продажи" Binding="{Binding Product.PriceOfSale}"></DataGridTextColumn>
+					<DataGridTextColumn IsReadOnly="True" Header="Наценка в %" Binding="{Binding PercentMarkup}"
+										 ></DataGridTextColumn>
+					<DataGridTemplateColumn>
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<Button Command="{Binding $parent[Window].DataContext.RemoveProductForReceipt}" IsEnabled="{Binding !$parent[Window].DataContext.ReceiptOrderEdit.IsReceipt}"
+										CommandParameter="{Binding $parent[DataGrid].SelectedItem}">Удалить</Button>
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+				</DataGrid.Columns>
+			</DataGrid>
+		<StackPanel Grid.Row="3">
+			<TextBox Margin="10" x:Name="SearchTextBox" Watermark="Добавить позицию - введите наименование товара"
+					 Text="{Binding OwnersParameters.SearchString}" IsVisible="{Binding !ReceiptOrderEdit.IsReceipt,FallbackValue=False}"></TextBox>
+			<Popup IsOpen="{Binding PopupSearchProductOpen, Mode=TwoWay}"
+				   PlacementTarget="{Binding ElementName=SearchTextBox}"
+				Placement="Bottom">
+				<ListBox ItemsSource="{Binding Products}" SelectionMode="Single"
+						 SelectedItem="{Binding AddedProduct}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock>
+								<TextBlock.Text>
+									<MultiBinding StringFormat="{}{0} {1} {2}">
+										<Binding Path="Name"></Binding>
+										<Binding Path="PriceOfSale"></Binding>
+										<Binding Path="Count"></Binding>
+									</MultiBinding>
+								</TextBlock.Text>
+							</TextBlock>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</Popup>
+			<TextBlock Text="{Binding ReceiptOrderEdit.Total,StringFormat={}Итого: {0}}"></TextBlock>
+			<TextBlock Text="{Binding ReceiptOrderEdit.UnitsOfGoods,StringFormat={}Итого едииниц товара: {0}}"></TextBlock>
+			<Label>Комментарий</Label>
+			<TextBox Text="{Binding ReceiptOrderEdit.Commentary}"
+					 TextWrapping="Wrap" MaxHeight="200" MinHeight="100"></TextBox>
+			<Button Classes="Login" IsVisible="{Binding ReceiptOrderEdit.IsReceipt,FallbackValue=False}"
+					Command="{Binding IssueReceipt}">Сохранить комментарий</Button>
+		</StackPanel>
+
+	</Grid>
+	</Border>
+</Window>

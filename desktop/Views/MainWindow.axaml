@@ -1,0 +1,85 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:desktop.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+		xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="desktop.Views.MainWindow"
+        x:DataType="vm:MainViewModel" WindowState="Maximized"
+        MinWidth="1100" MinHeight="532" Icon="/Assets/icon.ico"
+        Title="КДВ. Складской учет" WindowStartupLocation="CenterScreen"
+		FontFamily="{StaticResource MainFont}">
+	
+	<SplitView IsPaneOpen="{Binding IsPaneOpen}"
+			   OpenPaneLength="300"
+			   CompactPaneLength="50"
+			   DisplayMode="CompactInline"
+			   Background="White"
+			   PaneBackground="{StaticResource SideBarBackgroundColor}">
+		<SplitView.Pane>
+			<StackPanel Spacing="5">
+				<Button Command="{Binding TriggerPane}" HorizontalContentAlignment="Center" Foreground="White">
+					<materialIcons:MaterialIcon Width="35" Height="35" VerticalAlignment="Center" Kind="Menu"></materialIcons:MaterialIcon>
+				</Button>
+				<ContentControl Margin="0,0,0,0" Content="{Binding User}" IsVisible="{Binding IsPaneOpen}">
+					<ContentControl.ContentTemplate>
+						<DataTemplate>
+							<StackPanel Margin="20" Spacing="20" Orientation="Vertical">
+								<Grid>
+									<Border ClipToBounds="True" Width="100" Height="100" CornerRadius="100" HorizontalAlignment="Center">
+										<asyncImageLoader:AdvancedImage Stretch="UniformToFill" Name="avatar"
+															Source="{Binding Image, Converter={StaticResource imageConv},TargetNullValue='/Assets/noavatar.jpeg'}"></asyncImageLoader:AdvancedImage>
+									</Border>
+									<Border Width="100" ClipToBounds="True" Height="100" CornerRadius="100">
+										<ProgressBar Classes="loading">
+											<ProgressBar.IsVisible>
+												<MultiBinding Converter="{x:Static BoolConverters.Or}">
+													<Binding ElementName="avatar" Path="IsLoading"></Binding>
+													<Binding Path="$parent[Window].DataContext.IsUserInfoLoading"></Binding>
+												</MultiBinding>
+											</ProgressBar.IsVisible>
+										</ProgressBar>
+									</Border>
+								</Grid>
+								<Grid>
+									<StackPanel Orientation="Vertical">
+										<TextBlock Foreground="White" FontSize="24"
+												   HorizontalAlignment="Center" Text="{Binding UserName}">
+										</TextBlock>
+										<TextBlock Foreground="White" Text="{Binding Role}" HorizontalAlignment="Center"></TextBlock>
+									</StackPanel>
+									<Border CornerRadius="10" IsVisible="{Binding $parent[Window].DataContext.IsUserInfoLoading}">
+										<ProgressBar Classes="loading"></ProgressBar>
+									</Border>
+								</Grid>
+							</StackPanel>
+						</DataTemplate>
+					</ContentControl.ContentTemplate>
+				</ContentControl>
+				<ListBox SelectedItem="{Binding	SelectedMenuItem}" Classes="menu" ItemsSource="{Binding Menu}">
+					<ListBox.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Vertical" Spacing="20"></StackPanel>
+						</ItemsPanelTemplate>
+					</ListBox.ItemsPanel>
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Spacing="15" Orientation="Horizontal" Margin="5,0,0,0">
+								<materialIcons:MaterialIcon Width="40" Height="40" VerticalAlignment="Center" Kind="{Binding Icon}"></materialIcons:MaterialIcon>
+								<TextBlock IsVisible="{Binding IsPaneOpen}" VerticalAlignment="Center" Text="{Binding Name}"></TextBlock>
+							</StackPanel>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</StackPanel>
+		</SplitView.Pane>
+		<SplitView.Content>
+			<Border CornerRadius="12 0 0 0"
+					Background="White">
+				<TransitioningContentControl Content="{Binding SelectedViewModel}"></TransitioningContentControl>
+			</Border>
+		</SplitView.Content>
+	</SplitView>
+</Window>

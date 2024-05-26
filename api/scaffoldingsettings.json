@@ -1,0 +1,23 @@
+{
+  "DataSource": "Name=ConnectionStrings:DefaultConnection",
+  "Provider": "Microsoft.EntityFrameworkCore.SqlServer",
+  "ContextName": "KDVDbContext",
+  "ContextDirectory": "Data",
+  "OutputDirectory": "Models",
+  "ContextNamespace": null,
+  "Namespace": null,
+  "Schemas": null,
+  "Tables": "",
+  "ProjectDirectory": ".",
+  "StartupProjectDirectory": ".",
+  "TargetFramework": null,
+  "Configuration": null,
+  "TargetRuntime": null,
+  "DataAnnotations": false,
+  "UseDatabaseNames": false,
+  "NoOnConfiguring": true,
+  "NoPluralize": true,
+  "Force": true,
+  "NoBuild": true,
+  "Verbose": false
+}

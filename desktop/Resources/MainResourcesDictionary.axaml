@@ -1,0 +1,37 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:conv="using:desktop.Converters"
+					xmlns:tools="using:desktop.Tools"
+					xmlns:material="using:Material.Icons.Avalonia">
+   
+	<!-- Colors -->
+	<SolidColorBrush Color="#bb112d" x:Key="MainColor"></SolidColorBrush>
+	<SolidColorBrush Color="White" x:Key="MenuForegroundColor"></SolidColorBrush>
+	<SolidColorBrush Color="#bb112d" x:Key="SideBarBackgroundColor"></SolidColorBrush>
+	<SolidColorBrush Color="#9EA7CA" x:Key="AdditionalColor"></SolidColorBrush>
+	<SolidColorBrush Color="#363D42" x:Key="BodyAuthorizeBackgroundColor"></SolidColorBrush>
+	<SolidColorBrush Color="#4477C3" x:Key="ButtonMedicamentBackgroundColor"></SolidColorBrush>
+	<SolidColorBrush Color="#002A68" x:Key="PointeRoverButtonMedicamentBackgroundColor"></SolidColorBrush>
+	<!--Fonts-->
+	<FontFamily x:Key="MainFont">Source Sans Pro</FontFamily>
+	<!--Converters-->
+	<conv:ImageNameToFullNameConverter x:Key="imageConv"></conv:ImageNameToFullNameConverter>
+	<conv:BoolToSizeConverter x:Key="BoolToSizeConverter"></conv:BoolToSizeConverter>
+	<!--Filters-->
+	<DataTemplate x:Key="filterTemplate" DataType="tools:Filter">
+		<CheckBox Margin="0,0,0,0" Classes="filter" IsChecked="{Binding IsPick}" Content="{Binding NameFilter}"
+				  FontSize="14"></CheckBox>
+	</DataTemplate>
+	<DataTemplate x:Key="filterCategoryTemplate" DataType="tools:FilterCategory">
+		<StackPanel Spacing="10" Orientation="Vertical">
+			<TextBlock Text="{Binding NameCategory}" FontWeight="DemiBold" Foreground="Black"></TextBlock>
+			<ItemsControl ItemsSource="{Binding Filters}" ItemTemplate="{StaticResource filterTemplate}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<WrapPanel Orientation="Vertical"></WrapPanel>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+			</ItemsControl>
+		</StackPanel>
+	</DataTemplate>
+</ResourceDictionary>

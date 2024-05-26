@@ -1,0 +1,128 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:desktop.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		x:DataType="vm:AddEditOrderViewModel" Width="900" SystemDecorations="None"
+        x:Class="desktop.Views.AddEditOrderWindow"
+		WindowStartupLocation="CenterScreen" Foreground="White"
+		TransparencyLevelHint="Transparent" Icon="/Assets/icon.ico"
+        Title="КДВ. Складской учет">
+	<Border CornerRadius="10" Background="{StaticResource MainColor}">
+	<Grid Margin="5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<TextBlock FontWeight="Bold" FontSize="20">Оформление заказа</TextBlock>
+		<StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="5">
+			<StackPanel Orientation="Horizontal" x:Name="ButtonsStackPanel">
+				<Button Classes="Login" Command="{Binding SaveCommand}" IsVisible="{Binding !OrderEdit.IsShipment,FallbackValue=False}">Сохранить</Button>
+				<Button Classes="Login" Command="{Binding ShipmentOrder}" IsVisible="{Binding !OrderEdit.IsShipment,FallbackValue=False}">Оформить отгрузку</Button>
+				<Button Classes="Login" Command="{Binding CancelShipOrder}" IsVisible="{Binding OrderEdit.IsShipment,FallbackValue=False}">Отменить отгрузку</Button>
+			</StackPanel>
+			<Button Classes="Login" Command="{Binding Close}">Закрыть</Button>
+		</StackPanel>
+		<StackPanel Grid.Row="1" Orientation="Vertical" Spacing="10">
+			<StackPanel IsVisible="{Binding OrderEdit.IsShipment,FallbackValue=False}">
+				<TextBlock>
+					<TextBlock.Text>
+						<MultiBinding StringFormat="{}№{0} от {1}">
+							<Binding Path="OrderEdit.Id"></Binding>
+							<Binding Path="OrderEdit.DateOfOrder"></Binding>
+						</MultiBinding>
+					</TextBlock.Text>
+				</TextBlock>
+				<TextBlock Text="{Binding OrderEdit.Employee,StringFormat={}Оформил: {0}}"></TextBlock>
+				<TextBlock Text="{Binding OrderEdit.Address,StringFormat={}По адресу: {0}}"></TextBlock>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" IsEnabled="{Binding !OrderEdit.IsShipment}" Spacing="5">
+				<TextBlock>Дата отгрузки:</TextBlock>
+				<CalendarDatePicker SelectedDate="{Binding OrderEdit.ShipmentDate}"></CalendarDatePicker>
+				<TimePicker ClockIdentifier="24HourClock"
+							SelectedTime="{Binding OrderEdit.ShipmentTime,
+							TargetNullValue=09:00}"></TimePicker>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" IsVisible="{Binding !OrderEdit.IsShipment,FallbackValue=False}"
+						Spacing="10">
+				<TextBlock>Адрес: </TextBlock>
+				<TextBox Watermark="Напишите адрес доставки" MinWidth="300"
+						 Text="{Binding OrderEdit.Address}"></TextBox>
+			</StackPanel>
+		</StackPanel>
+		<StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
+			<SplitButton Content="Печать" Classes="print" Margin="7"
+						 IsEnabled="{Binding IsEnabledPrint}"
+						 x:Name="SplitButtonPrint">
+				<SplitButton.Flyout>
+					<MenuFlyout>
+						<MenuItem Header="Счёт" Command="{Binding PrintBill}"></MenuItem>
+						<MenuItem Header="Товарный чек" Command="{Binding PrintCheck}"></MenuItem>
+						<MenuItem Header="Накладная" Command="{Binding PrintNakladnaya}"></MenuItem>
+						<MenuItem Header="Лист комплектации" Command="{Binding PrintListKomplekt}"></MenuItem>
+					</MenuFlyout>
+				</SplitButton.Flyout>
+			</SplitButton>
+		</StackPanel>
+		<DataGrid Grid.Row="2" Grid.ColumnSpan="2" AutoGenerateColumns="False" IsReadOnly="{Binding OrderEdit.IsShipment}"
+				Classes="DisableHoveringScrollBar"  ItemsSource="{Binding OrderEdit.OrderProduct}">
+			<DataGrid.Columns>
+				<DataGridTextColumn IsReadOnly="True" Header="Артикул" Binding="{Binding Product.ProductNumber}"></DataGridTextColumn>
+				<DataGridTextColumn IsReadOnly="True" Header="Наименование" Binding="{Binding Product.Name}"></DataGridTextColumn>
+				<DataGridTextColumn Header="Цена продажи" Binding="{Binding Price}"></DataGridTextColumn>
+				<DataGridTextColumn IsReadOnly="True" Header="На складе" Binding="{Binding Product.Count}"></DataGridTextColumn>
+				<DataGridTextColumn Header="Кол-во" Binding="{Binding Quantity}"></DataGridTextColumn>
+				<DataGridTextColumn IsReadOnly="True" Header="Сумма" Binding="{Binding Sum}"></DataGridTextColumn>
+				<DataGridTemplateColumn>
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Button Command="{Binding $parent[Window].DataContext.RemoveProductForOrder}" IsEnabled="{Binding !$parent[Window].DataContext.OrderEdit.IsShipment}"
+									CommandParameter="{Binding $parent[DataGrid].SelectedItem}">Удалить</Button>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+			</DataGrid.Columns>
+		</DataGrid>
+		<StackPanel Grid.Row="3">
+			<TextBox Margin="10" x:Name="SearchTextBox" Watermark="Добавить позицию - введите наименование товара"
+					 Text="{Binding OwnersParameters.SearchString}" IsVisible="{Binding !OrderEdit.IsShipment,FallbackValue=False}"></TextBox>
+			<Popup IsOpen="{Binding PopupSearchProductOpen, Mode=TwoWay}"
+				   PlacementTarget="{Binding ElementName=SearchTextBox}"
+				Placement="Bottom">
+				<ListBox ItemsSource="{Binding Products}" SelectionMode="Single"
+						 SelectedItem="{Binding AddedProduct}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock>
+								<TextBlock.Text>
+									<MultiBinding StringFormat="{}{0}, {1} руб., {2} шт.">
+										<Binding Path="Name"></Binding>
+										<Binding Path="PriceOfSale"></Binding>
+										<Binding Path="Count"></Binding>
+									</MultiBinding>
+								</TextBlock.Text>
+							</TextBlock>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</Popup>
+			<TextBlock Text="{Binding OrderEdit.Total,StringFormat={}Итого: {0} руб.}"></TextBlock>
+			<Label FontWeight="Bold">Комментарий</Label>
+			<TextBox Text="{Binding OrderEdit.Commentary}" x:Name="TextBoxCommentary"
+					 TextWrapping="Wrap" MaxHeight="200" MinHeight="100"></TextBox>
+			<Panel x:Name="PanelButtonCommentary">
+				<Button Classes="Login" IsVisible="{Binding OrderEdit.IsShipment,FallbackValue=False}"
+					Command="{Binding ShipmentOrder}">Сохранить комментарий</Button>
+			</Panel>			
+		</StackPanel>
+
+	</Grid>
+		</Border>
+</Window>

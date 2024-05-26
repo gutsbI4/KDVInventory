@@ -1,0 +1,92 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:vm="using:desktop.ViewModels"
+			 xmlns:material="using:Material.Icons.Avalonia"
+			 x:DataType="vm:OrdersViewModel"
+             x:Class="desktop.Views.OrdersView">
+	<UserControl.Background>
+		<ImageBrush Source="/Assets/pattern.png"
+					 Opacity="0.27"></ImageBrush>
+	</UserControl.Background>
+	<Grid Margin="5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="*"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+		</Grid.RowDefinitions>
+		<StackPanel Orientation="Vertical">
+			<Button Margin="5" Classes="Login" Command="{Binding AddOrder}"
+					IsVisible="{Binding $parent[Window].DataContext.IsCommRepresentive}">Новый заказ</Button>
+			<StackPanel Orientation="Horizontal" Margin="5" Spacing="10" Height="35">
+				<TextBox Classes="search" Watermark="Поиск по id, продуктам в заказе и комментарию"
+						 Text="{Binding OwnersParameters.SearchString}"></TextBox>
+				<CheckBox Classes="filter" IsChecked="{Binding IsShipmentSelected}">
+					<TextBlock>
+						Показывать только отгруженные
+					</TextBlock>
+				</CheckBox>
+				<TextBlock VerticalAlignment="Center">С: </TextBlock>
+				<CalendarDatePicker SelectedDate="{Binding DateRange.DateOne}"
+									Watermark="Начало"></CalendarDatePicker>
+				<TextBlock VerticalAlignment="Center">По: </TextBlock>
+				<CalendarDatePicker SelectedDate="{Binding DateRange.DateTwo}"
+									Watermark="Конец"></CalendarDatePicker>
+				<Button Classes="Login" Command="{Binding CancelDateSearch}">Сбросить</Button>
+			</StackPanel>
+		</StackPanel>
+			<DataGrid Grid.Row="1" IsReadOnly="True" ItemsSource="{Binding Orders}"
+					  CellPointerPressed="DataGrid_CellPointerPressed"
+					  Cursor="Hand" LoadingRow="DataGrid_LoadingRow">
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="Номер" Binding="{Binding OrderId}">
+					</DataGridTextColumn>
+					<DataGridTextColumn Header="Создан" Binding="{Binding DateOfOrder}"></DataGridTextColumn>
+					<DataGridTextColumn Header="Адрес" Binding="{Binding Address}"></DataGridTextColumn>
+					<DataGridTextColumn Header="Оформил заказ:" Binding="{Binding Employee}"></DataGridTextColumn>
+					<DataGridTextColumn Header="Сумма, руб." Binding="{Binding Total}"></DataGridTextColumn>
+					<DataGridTextColumn Header="Отгрузка" Binding="{Binding DateOfShipment}"></DataGridTextColumn>
+					<DataGridTextColumn Header="Комментарий" Binding="{Binding Commentary}"></DataGridTextColumn>
+					<DataGridTemplateColumn Header="Отгружен?">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<WrapPanel>
+									<TextBlock IsVisible="{Binding IsShipment}"
+												>Да</TextBlock>
+									<TextBlock IsVisible="{Binding !IsShipment}">Нет</TextBlock>
+								</WrapPanel>
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+				</DataGrid.Columns>
+			</DataGrid>
+			<Grid Margin="10" Grid.Row="2" VerticalAlignment="Top">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition></ColumnDefinition>
+					<ColumnDefinition Width="Auto"></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+				<StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
+					<TextBlock VerticalAlignment="Center" Text="Позиций на странице:"></TextBlock>
+					<ComboBox Classes="pagination" SelectedValue="{Binding OwnersParameters.SizePage}" x:Name="sizePageCb" Width="75" ItemsSource="{Binding PageCounts}"></ComboBox>
+				</StackPanel>
+				<StackPanel Grid.Column="1" Spacing="10" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
+					<Button Command="{Binding GoFirstPage}" Name="skipPrvBtn" Classes="pagination">
+						<material:MaterialIconExt Size="30" Kind="SkipPreviousOutline"></material:MaterialIconExt>
+					</Button>
+					<Button Command="{Binding PreviousPage}" Classes="pagination">
+							<material:MaterialIconExt Size="30" Kind="MenuLeftOutline"></material:MaterialIconExt>
+					</Button>
+					<NumericUpDown Minimum="1" Maximum="{Binding CountPage}" Value="{Binding OwnersParameters.PageNumber}" AllowSpin="False" ShowButtonSpinner="False"></NumericUpDown>
+					<TextBlock VerticalAlignment="Center" Text="{Binding CountPage, StringFormat='{}из {0}'}"></TextBlock>
+					<Button Classes="pagination" Command="{Binding NextPage}">
+							<material:MaterialIconExt Size="30" Kind="MenuRightOutline"></material:MaterialIconExt>
+					</Button>
+					<Button Command="{Binding GoLastPage}" Classes="pagination">
+						<material:MaterialIconExt Size="30" Kind="SkipNextOutline"></material:MaterialIconExt>
+					</Button>
+				</StackPanel>
+			</Grid>
+	</Grid>
+</UserControl>

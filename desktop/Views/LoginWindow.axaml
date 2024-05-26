@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="clr-namespace:desktop.ViewModels"
+		x:DataType="vm:LoginViewModel"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+		xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+		WindowStartupLocation="CenterScreen" Width="350" Height="450"
+        x:Class="desktop.Views.LoginWindow"
+		Title="КДВ. Складской учет" Icon="/Assets/icon.ico"
+		SystemDecorations="None" TransparencyLevelHint="Transparent"
+		Background="Transparent">
+	<Border CornerRadius="15" Background="{StaticResource MainColor}">
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"></RowDefinition>
+				<RowDefinition Height="*"></RowDefinition>
+				<RowDefinition Height="8*"></RowDefinition>
+			</Grid.RowDefinitions>
+			<Button Click="Button_Click" Margin="7" HorizontalAlignment="Right" VerticalAlignment="Top" Cursor="Hand"
+					Background="Transparent">
+				<materialIcons:MaterialIcon Width="40" Height="40" Kind="Close" Foreground="White"></materialIcons:MaterialIcon>
+			</Button>
+			<StackPanel Margin="30,0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
+				<Image Width="70" Height="70" Source="/Assets/icon.ico" Stretch="Uniform"></Image>
+			</StackPanel>
+			<StackPanel Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="35">
+				<TextBox Classes="clearButton" Width="250" Height="35" Text="{Binding AuthorizationData.Login}"
+						 Watermark="Имя пользователя"></TextBox>
+				<TextBox Classes="revealPasswordButton" Height="35" Text="{Binding AuthorizationData.Password}" Watermark="Пароль"
+						 PasswordChar="*" VerticalContentAlignment="Center" ></TextBox>
+				<Button Name="LoginButton" Width="250"  CornerRadius="5" HorizontalAlignment="Center"
+					Content="Войти" HorizontalContentAlignment="Center" FontSize="15"
+					Height="45" Classes="Login" VerticalContentAlignment="Center"
+					Command="{Binding Login}" Margin="0,30,0,0" Cursor="Hand">
+					<StackPanel>
+						<progRing:ProgressRing IsActive="{Binding IsLogin}" IsVisible="{Binding IsLogin}"
+										   Width="20" Height="20" Foreground="{StaticResource MainColor}"></progRing:ProgressRing>
+						<TextBlock VerticalAlignment="Center" Text="Авторизация"></TextBlock>
+					</StackPanel>
+					
+				</Button>
+				<TextBlock Text="{Binding Result}" Foreground="White" HorizontalAlignment="Center"></TextBlock>
+			</StackPanel>
+		</Grid>
+	</Border>
+</Window>

@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="clr-namespace:desktop.ViewModels"
+		x:DataType="vm:LoginViewModel"
+		xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		SystemDecorations="None"
+		Width="500" Height="700"
+		WindowStartupLocation="CenterScreen"
+        x:Class="desktop.Views.SplashWindow" Icon="/Assets/icon.ico" 
+        Title="КДВ. Складской учет" Background="{StaticResource MainColor}">
+	<Design.DataContext>
+		
+	</Design.DataContext>
+	<Grid>
+		<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+			<Image Source="avares://desktop/Assets/icon.ico" Width="150"></Image>
+			<TextBlock TextAlignment="Center" FontSize="45" Text="KDV" Foreground="White"></TextBlock>
+		</StackPanel>
+		<StackPanel Spacing="5" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+					Orientation="Horizontal">
+			<TextBlock Name="StatusTextBlock" VerticalAlignment="Center" Text="Загрузка сервисов..."
+					   Foreground="White"></TextBlock>
+			<progRing:ProgressRing Width="40" Height="40" IsActive="True" Margin="10"
+								   Foreground="White"></progRing:ProgressRing>
+		</StackPanel>
+	</Grid>
+</Window>

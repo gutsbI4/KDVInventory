@@ -1,0 +1,112 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:vm="using:desktop.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 x:DataType="vm:UsersViewModel"
+             x:Class="desktop.Views.UsersView"
+			 x:CompileBindings="False">
+	<UserControl.Background>
+		<ImageBrush Source="/Assets/pattern.png"
+					 Opacity="0.27"></ImageBrush>
+	</UserControl.Background>
+	<Grid Margin="5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="*"></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"></ColumnDefinition>
+			<ColumnDefinition Width="Auto"></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<StackPanel Margin="10,5,0,0" Spacing="10">
+			<Button Classes="Login" Command="{Binding AddUser}">Добавить</Button>
+			<CheckBox Classes="filter" IsChecked="{Binding IsArchiveSelected}">Показывать архив</CheckBox>
+		</StackPanel>
+		<DataGrid Name="dataGridUsers" Grid.Row="1" Margin="0,20,0,0" ItemsSource="{Binding Users}" Grid.ColumnSpan="2"
+				   IsReadOnly="True" CellPointerPressed="DataGrid_CellPointerPressed"
+				  Cursor="Hand">
+			<DataGrid.Columns>
+				<DataGridTemplateColumn IsVisible="{Binding IsArchiveSelected}">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Button Command="{Binding $parent[UserControl].DataContext.NotArchiveUser}"
+									Foreground="{StaticResource MainColor}" Background="Transparent"
+									CommandParameter="{Binding $parent[DataGrid].SelectedItem}">
+								<materialIcons:MaterialIconExt Size="15"
+										Kind="ArchiveArrowDownOutline"></materialIcons:MaterialIconExt>
+							</Button>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTextColumn Header="ФИО"
+								 Binding="{Binding UserName}">
+				</DataGridTextColumn>
+				<DataGridTextColumn Header="Роль"
+								 Binding="{Binding Role}"></DataGridTextColumn>
+				<DataGridTextColumn Header="Активен?"
+									Binding="{Binding IsActive}"></DataGridTextColumn>
+				<DataGridTextColumn Header="Вход сегодня" 
+									Binding="{Binding FirstEntry, TargetNullValue=''}"></DataGridTextColumn>
+				<DataGridTextColumn Header="Последнее действие совершено"
+									Binding="{Binding LastAction, TargetNullValue=''}"></DataGridTextColumn>
+				<DataGridTemplateColumn IsVisible="{Binding !IsArchiveSelected}">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Button Command="{Binding $parent[UserControl].DataContext.ArchiveUser}"
+									CommandParameter="{Binding $parent[DataGrid].SelectedItem}"
+									Background="Transparent">
+								<materialIcons:MaterialIconExt Size="15"
+										Kind="CloseThick"></materialIcons:MaterialIconExt>
+							</Button>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+			</DataGrid.Columns>
+		</DataGrid>
+		<SplitView Grid.Column="2" IsPaneOpen="{Binding IsPaneOpen}" Grid.RowSpan="2"
+				   PanePlacement="Right" OpenPaneLength="600" CompactPaneLength="0"
+				   Foreground="White"
+				   DisplayMode="CompactInline">
+			<SplitView.Pane>
+				<Grid Background="{StaticResource MainColor}">		
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition></RowDefinition>
+						<RowDefinition></RowDefinition>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition></ColumnDefinition>
+						<ColumnDefinition></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+						<TextBlock Text="{Binding SelectedUser.UserName}"
+								   FontWeight="Bold" FontSize="17"
+								   Margin="5"></TextBlock>
+						<Button Grid.Column="1" HorizontalAlignment="Right" Classes="Login"
+								Click="Button_Click"
+								Margin="5">Закрыть</Button>
+
+					<DataGrid Grid.Row="1" ItemsSource="{Binding Audits}" Grid.ColumnSpan="2"
+							  IsReadOnly="True">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="День" Binding="{Binding Date}"></DataGridTextColumn>
+							<DataGridTextColumn Header="Вход" Binding="{Binding TimeEntry}"></DataGridTextColumn>
+							<DataGridTextColumn Header="Активность" Binding="{Binding QuantityActivity}"></DataGridTextColumn>
+							<DataGridTemplateColumn Header="Скачать .txt активностей">
+								<DataGridTemplateColumn.CellTemplate>
+									<DataTemplate>
+										<Button Command="{Binding $parent[UserControl].DataContext.DownloadAuditsCommand}"
+											Classes="Login"	CommandParameter="{Binding Date}">Скачать</Button>
+									</DataTemplate>
+								</DataGridTemplateColumn.CellTemplate>
+							</DataGridTemplateColumn>
+						</DataGrid.Columns>
+					</DataGrid>
+				</Grid>
+			
+			</SplitView.Pane>
+		</SplitView>
+	</Grid>
+</UserControl>
