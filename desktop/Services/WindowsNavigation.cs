@@ -49,7 +49,6 @@ namespace desktop.Services
 
             ShowWindow<VM>(bundle);
 
-            // Закроем все окна, кроме только что открытого
             foreach (var window in lifetime.Windows.ToList())
             {
                 if (!(window.DataContext is VM))
@@ -58,7 +57,6 @@ namespace desktop.Services
                 }
             }
 
-            // Очистим коллекцию, поскольку все окна кроме одного должны быть закрыты
             _openWindows.Clear();
         }
 

@@ -11,7 +11,7 @@ namespace desktop.Services
     {
         public enum Filter
         {
-            JpgImage,
+            Image,
             Docx
         }
         public void RegisterProvider(object provider);

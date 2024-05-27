@@ -35,17 +35,19 @@ public class ProductController : ControllerBase
                     .Include(p=>p.ReceiptOrderProduct).ThenInclude(p=>p.ReceiptOrder)
                     .Include(p=>p.ExpenseOrderProduct).ThenInclude(p=>p.ExpenseOrder)
                     .Include(p=>p.OrderProduct).ThenInclude(p=>p.Order)
-                    .Where(p=>p.CategoryId == categoryId);
+                    .Where(p=>p.CategoryId == categoryId && !p.IsDeleted);
             }
             else productsQuery = _dbContext.Product.Include(p => p.ProductImage).Include(p => p.ProductDetails).Include(p => p.PriceUnit)
                     .Include(p => p.ReceiptOrderProduct).ThenInclude(p => p.ReceiptOrder)
                     .Include(p => p.ExpenseOrderProduct).ThenInclude(p => p.ExpenseOrder)
-                    .Include(p => p.OrderProduct).ThenInclude(p => p.Order);
+                    .Include(p => p.OrderProduct).ThenInclude(p => p.Order)
+                    .Where(p=>!p.IsDeleted);
             if (!String.IsNullOrEmpty(ownerParametrs.SearchString))
             {
                 string search = ownerParametrs.SearchString.ToLower();
                 productsQuery = productsQuery.Where(b => b.Name.ToLower().Contains(search)
-                || b.Description.ToLower().Contains(search) || b.ProductNumber.ToLower().Contains(search));
+                || b.Description.ToLower().Contains(search) || b.ProductNumber.ToLower().Contains(search)
+                || b.Barcode.ToString().Contains(search));
             }
             if (!String.IsNullOrEmpty(ownerParametrs.Filter))
             {
@@ -129,7 +131,7 @@ public class ProductController : ControllerBase
             var product = await _dbContext.Product.FindAsync(id);
             if (product == null)
                 return NotFound("Товар с указанным id не найден");
-            _dbContext.Product.Remove(product);
+            product.IsDeleted = true;
             await _dbContext.SaveChangesAsync();
             await AuditLogger.AddAuditRecord(_dbContext, idUser, $"Удалил продукцию. ({product.Name})");
             return Ok();
@@ -226,7 +228,7 @@ public class ProductController : ControllerBase
         }
         catch (Exception)
         {
-            return StatusCode(StatusCodes.Status501NotImplemented, "Не удалось сохранить товар. Проверьте все ли поля заполнены!");
+            return StatusCode(StatusCodes.Status501NotImplemented, "Не удалось сохранить товар. Проверьте все ли поля заполнены правильно!");
         }
     }
     [Authorize]
@@ -288,7 +290,7 @@ public class ProductController : ControllerBase
         }
         catch (Exception)
         {
-            return StatusCode(StatusCodes.Status501NotImplemented,"Не удалось добавить товар. Проверьте все ли поля заполнены!");
+            return StatusCode(StatusCodes.Status501NotImplemented,"Не удалось добавить товар. Проверьте все ли поля заполнены правильно!");
         }
     }
     [Authorize]

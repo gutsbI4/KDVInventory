@@ -8,14 +8,17 @@
 		x:DataType="vm:AddEditReceiptOrderViewModel" Width="900"
         Title="КДВ. Складской учет" SystemDecorations="None"
 		WindowStartupLocation="CenterScreen" Foreground="White"
-		TransparencyLevelHint="Transparent" Icon="/Assets/icon.ico">
+		TransparencyLevelHint="Transparent" Icon="/Assets/icon.ico"
+		InputElement.PointerMoved="InputElement_OnPointerMoved"
+		InputElement.PointerPressed="InputElement_OnPointerPressed"
+		InputElement.PointerReleased="InputElement_OnPointerReleased">
 	<Border CornerRadius="10" Background="{StaticResource MainColor}">
 	<Grid Margin="5">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"></RowDefinition>
 			<RowDefinition Height="Auto"></RowDefinition>
-			<RowDefinition Height="Auto"></RowDefinition>
-			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="*"></RowDefinition>
+			<RowDefinition Height="*"></RowDefinition>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition></ColumnDefinition>
@@ -53,6 +56,7 @@
 			<DataGrid Grid.Row="2" Grid.ColumnSpan="2" AutoGenerateColumns="False" IsReadOnly="{Binding ReceiptOrderEdit.IsReceipt}"
 					  ItemsSource="{Binding ReceiptOrderEdit.ReceiptOrderProduct}"
 					  Classes="DisableHoveringScrollBar">
+				
 				<DataGrid.Columns>
 					<DataGridTextColumn IsReadOnly="True" Header="Артикул" Binding="{Binding Product.ProductNumber}"></DataGridTextColumn>
 					<DataGridTextColumn IsReadOnly="True" Header="Наименование" Binding="{Binding Product.Name}"></DataGridTextColumn>
@@ -98,7 +102,7 @@
 			<TextBlock Text="{Binding ReceiptOrderEdit.Total,StringFormat={}Итого: {0}}"></TextBlock>
 			<TextBlock Text="{Binding ReceiptOrderEdit.UnitsOfGoods,StringFormat={}Итого едииниц товара: {0}}"></TextBlock>
 			<Label>Комментарий</Label>
-			<TextBox Text="{Binding ReceiptOrderEdit.Commentary}"
+			<TextBox Text="{Binding ReceiptOrderEdit.Commentary}" AcceptsReturn="True"
 					 TextWrapping="Wrap" MaxHeight="200" MinHeight="100"></TextBox>
 			<Button Classes="Login" IsVisible="{Binding ReceiptOrderEdit.IsReceipt,FallbackValue=False}"
 					Command="{Binding IssueReceipt}">Сохранить комментарий</Button>

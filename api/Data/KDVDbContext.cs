@@ -178,7 +178,6 @@ public partial class KDVDbContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(50);
         });
 
-
         modelBuilder.Entity<PriceUnit>(entity =>
         {
             entity.Property(e => e.Unit).HasMaxLength(20);
@@ -188,7 +187,7 @@ public partial class KDVDbContext : DbContext
         {
             entity.HasKey(e => e.ProductId).HasName("PK_Product_1");
 
-            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.Description).HasMaxLength(500);
             entity.Property(e => e.MinPriceOfSale).HasColumnType("decimal(7, 2)");
             entity.Property(e => e.Name).HasMaxLength(150);
             entity.Property(e => e.PriceOfSale).HasColumnType("decimal(7, 2)");

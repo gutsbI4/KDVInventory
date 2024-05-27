@@ -16,6 +16,7 @@ namespace desktop.Models
         private decimal _total;
         private DateTime? _shipmentDate;
         private TimeSpan? _shipmentTime;
+        private DateTime? _dateOfShipment;
 
         public int Id { get; set; }
 
@@ -43,7 +44,11 @@ namespace desktop.Models
         }
         public string? DateOfOrder { get; set; }
 
-        public DateTime? DateOfShipment { get; set; }
+        public DateTime? DateOfShipment
+        {
+            get => _dateOfShipment;
+            set => this.RaiseAndSetIfChanged(ref _dateOfShipment, value);
+        }
         public string? Employee { get; set; }
         public string Address { get; set; }
         
@@ -94,16 +99,19 @@ namespace desktop.Models
                     }
                 }
             };
-            if(DateOfShipment != null)
+            this.WhenAnyValue(x => x.DateOfShipment).Subscribe(_ =>
             {
-                ShipmentDate = new DateTime(DateOfShipment.Value.Year, DateOfShipment.Value.Month, DateOfShipment.Value.Day);
-                ShipmentTime = new TimeSpan(DateOfShipment.Value.Hour, DateOfShipment.Value.Minute, DateOfShipment.Value.Second);
-            }
-            else
-            {
-                ShipmentDate = DateTime.Now;
-                ShipmentTime = new TimeSpan(9, 0, 0);
-            }
+                if(DateOfShipment == null)
+                {
+                    ShipmentDate = DateTime.Now;
+                    ShipmentTime = new TimeSpan(9, 0, 0);
+                }
+                else
+                {
+                    ShipmentDate = new DateTime(DateOfShipment.Value.Year, DateOfShipment.Value.Month, DateOfShipment.Value.Day);
+                    ShipmentTime = new TimeSpan(DateOfShipment.Value.Hour, DateOfShipment.Value.Minute, DateOfShipment.Value.Second);
+                }
+            });
             this.WhenAnyValue(x => x.OrderProduct).Subscribe(_ => RecalculateTotals());
             this.WhenAnyValue(x => x.ShipmentDate, y => y.ShipmentTime).Subscribe(_ =>
             {
@@ -113,7 +121,7 @@ namespace desktop.Models
         }
         private void OnOrderProductPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "Quantity" || e.PropertyName == "SalePrice")
+            if (e.PropertyName == "Quantity" || e.PropertyName == "Price")
             {
                 RecalculateTotals();
             }

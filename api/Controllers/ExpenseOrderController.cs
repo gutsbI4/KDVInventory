@@ -29,7 +29,7 @@ namespace api.Controllers
             {
                 IQueryable<ExpenseOrder> expenseOrdersQuery = _dbContext.ExpenseOrder.Include(p => p.Employee)
                      .ThenInclude(p => p.EmployeeNavigation)
-                     .Include(p => p.ExpenseOrderProduct);
+                     .Include(p => p.ExpenseOrderProduct).OrderByDescending(x=>x.Id);
                 if (!String.IsNullOrEmpty(ownerParameters.SearchString))
                 {
                     string search = ownerParameters.SearchString.ToLower();
@@ -83,9 +83,9 @@ namespace api.Controllers
                 }
 
                 expenseOrder.Commentary = expenseOrderEditDTO.Commentary;
+                if (expenseOrderEditDTO.IsExpense && !expenseOrder.IsExpense) expenseOrder.DateOfExpense = DateTime.Now;
+                else if (!expenseOrderEditDTO.IsExpense) expenseOrder.DateOfExpense = null;
                 expenseOrder.IsExpense = expenseOrderEditDTO.IsExpense;
-                if (expenseOrderEditDTO.IsExpense) expenseOrder.DateOfExpense = DateTime.Now;
-                else expenseOrder.DateOfExpense = null;
                 expenseOrder.EmployeeId = int.Parse(User.FindFirst(ClaimTypes.Name)?.Value);
                 if (expenseOrderEditDTO.Id == 0) expenseOrder.DateOfCreate = DateTime.Now;
 

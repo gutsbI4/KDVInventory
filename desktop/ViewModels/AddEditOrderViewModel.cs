@@ -96,6 +96,11 @@ namespace desktop.ViewModels
                     await _dialogService.ShowDialog("Сохранение", "Нельзя оформить заказ без продукции.", IDialogService.DialogType.Standard);
                     return;
                 }
+                else if (String.IsNullOrEmpty(OrderEdit.Address))
+                {
+                    await _dialogService.ShowDialog("Сохранение", "Укажите адрес.", IDialogService.DialogType.Standard);
+                    return;
+                }
                 int orderId = await _orderRepository.SaveOrder(_accessTokenRepository.GetAccessToken(), OrderEdit);
                 _lazyGetOrderCommand.Value.Execute(orderId);
                 (Bundle.OwnerViewModel as OrdersViewModel).RestartLoadOrders();
@@ -182,6 +187,11 @@ namespace desktop.ViewModels
             if (OrderEdit.OrderProduct.Count < 1)
             {
                 await _dialogService.ShowDialog("Сохранение", "Нельзя оформить заказ без продукции.", IDialogService.DialogType.Standard);
+                return;
+            }
+            else if (String.IsNullOrEmpty(OrderEdit.Address))
+            {
+                await _dialogService.ShowDialog("Сохранение", "Укажите адрес.", IDialogService.DialogType.Standard);
                 return;
             }
             OrderEdit.IsShipment = true;

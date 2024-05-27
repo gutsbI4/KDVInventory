@@ -66,7 +66,11 @@ namespace desktop.ViewModels
                 command.ThrownExceptions.Subscribe(async x => CommandExc(x, command));
                 return command;
             });
-            GetCategoriesCommand = ReactiveCommand.CreateFromTask(async () => await _categoryRepository.GetCategories());
+            GetCategoriesCommand = ReactiveCommand.CreateFromTask(async () =>
+            {
+                var allCategories = await _categoryRepository.GetCategories();
+                return allCategories.OrderBy(x=>x.Name).Where(c => c.Name != "Все категории");
+            });
             GetCategoriesCommand.ThrownExceptions.Subscribe(async x => CommandExc(x, GetCategoriesCommand));
             _categories = GetCategoriesCommand.ToProperty(this, x => x.Categories);
             GetCategoriesCommand.Execute().Subscribe();;
@@ -186,10 +190,16 @@ namespace desktop.ViewModels
 
             SaveCommand = ReactiveCommand.CreateFromTask(async () =>
             {
+                if(String.IsNullOrEmpty(Product.Name) || String.IsNullOrEmpty(Product.PriceOfSale.ToString()))
+                {
+                    _dialogService.ShowDialog("Сохранение", "Обязательно заполните название и цену!", IDialogService.DialogType.Standard);
+                    return;
+                }
                 if (Bundle.GetParameter("idProduct") != null)
                     await _productRepository.UpdateProduct(_accessTokenRepository.GetAccessToken(), Product);
                 else await _productRepository.AddProduct(_accessTokenRepository.GetAccessToken(), Product);
-                (Bundle?.OwnerViewModel as ProductsViewModel)?.GoToFirstPageAndRestartLoadProducts();
+                var vm = Bundle?.OwnerViewModel as ProductsViewModel;
+                vm.GoToFirstPageAndRestartLoadProducts();
                 _viewNavigation.Close(this);
             });
             SaveCommand.ThrownExceptions.Subscribe(async x => await CommandExc(x, SaveCommand));
@@ -332,7 +342,7 @@ namespace desktop.ViewModels
         }
         private async Task AddImageProduct()
         {
-            await using var stream = await _filePickerService.OpenFile(IFilePickerService.Filter.JpgImage);
+            await using var stream = await _filePickerService.OpenFile(IFilePickerService.Filter.Image);
             if (stream == null)
                 return;
             StreamPart file = new StreamPart(stream, "image.jpg", contentType: "image/jpeg");

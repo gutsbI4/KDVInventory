@@ -60,7 +60,7 @@ namespace desktop.Services
             {
                 var result = await boxYesNo.ShowAsync();
                 if (result== "Да") return IDialogService.DialogResult.Yes;
-                else if(result == "Нет") return IDialogService.DialogResult.Yes;
+                else if(result == "Нет") return IDialogService.DialogResult.No;
             }
             return IDialogService.DialogResult.Ok;
             

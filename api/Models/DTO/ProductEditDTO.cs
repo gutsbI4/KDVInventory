@@ -1,5 +1,6 @@
 using api.Models;
 using api.Models.DTO;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text.Json.Serialization;
 

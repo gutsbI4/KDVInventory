@@ -181,8 +181,9 @@
 					<material:MaterialIconExt Size="25" Kind="ChevronDoubleRight"></material:MaterialIconExt>
 				</Button>
 			</StackPanel>
-		<Button x:Name="buttonUp" Background="{StaticResource MainColor}" Grid.Column="1" Grid.Row="3" CornerRadius="100"
-				Width="40" Height="40" Foreground="White" IsVisible="False" Click="Button_Click" ZIndex="1">
+		<Button x:Name="buttonUp" Background="{StaticResource MainColor}" Grid.Column="0" Grid.Row="3" CornerRadius="100"
+				Width="40" Height="40" Foreground="White" IsVisible="False" Click="Button_Click" ZIndex="1"
+				HorizontalAlignment="Right">
 			<material:MaterialIconExt Size="25" Kind="ChevronUp"></material:MaterialIconExt>
 		</Button>
 	<!--Search and Filtering-->

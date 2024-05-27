@@ -27,7 +27,6 @@ public class ImageController: ControllerBase
 
             var filePath = Path.Combine("Images", image);
             var bytes = System.IO.File.ReadAllBytes(filePath);
-            Task.Delay(5000).Wait(); 
             return File(bytes, "image/jpeg");
         }
         catch (FileNotFoundException)

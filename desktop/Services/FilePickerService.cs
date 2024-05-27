@@ -13,17 +13,23 @@ namespace desktop.Services
     public class FilePickerService : IFilePickerService
     {
         private TopLevel? _topLevel;
+        public static FilePickerFileType ImageAll { get; } = new("All Images")
+        {
+            Patterns = new[] { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp", "*.webp" },
+            AppleUniformTypeIdentifiers = new[] { "public.image" },
+            MimeTypes = new[] { "image/*" }
+        };
         public async Task<Stream> OpenFile(IFilePickerService.Filter filter)
         {
             IReadOnlyList<IStorageFile> files = null;
-            if(filter == IFilePickerService.Filter.JpgImage)
+            if(filter == IFilePickerService.Filter.Image)
             {
                 files = await _topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
                 {
                     Title = "Выбор файла",
                     AllowMultiple = false,
-                    FileTypeFilter = new[] {FilePickerFileTypes.ImageJpg}
-                });
+                    FileTypeFilter = new[] { ImageAll }
+                }); ;
             }
             if(files != null && files.Count >= 1)
             {

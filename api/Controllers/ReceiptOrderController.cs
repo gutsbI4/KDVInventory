@@ -29,7 +29,7 @@ namespace api.Controllers
             {
                 IQueryable<ReceiptOrder> receiptOrdersQuery =  _dbContext.ReceiptOrder.Include(p => p.Employee)
                      .ThenInclude(p => p.EmployeeNavigation)
-                     .Include(p => p.ReceiptOrderProduct);
+                     .Include(p => p.ReceiptOrderProduct).OrderByDescending(x=>x.Id);
                 if (!String.IsNullOrEmpty(ownerParameters.SearchString))
                 {
                     string search = ownerParameters.SearchString.ToLower();
@@ -82,9 +82,9 @@ namespace api.Controllers
                 }
 
                 receiptOrder.Commentary = receiptOrderEditDTO.Commentary;
+                if (receiptOrderEditDTO.IsReceipt && !receiptOrder.IsReceipt) receiptOrder.DateOfReceipt = DateTime.Now;
+                else if(!receiptOrderEditDTO.IsReceipt) receiptOrder.DateOfReceipt = null;
                 receiptOrder.IsReceipt = receiptOrderEditDTO.IsReceipt;
-                if (receiptOrderEditDTO.IsReceipt) receiptOrder.DateOfReceipt = DateTime.Now;
-                else receiptOrder.DateOfReceipt = null;
                 receiptOrder.EmployeeId = int.Parse(User.FindFirst(ClaimTypes.Name)?.Value);
                 if (receiptOrderEditDTO.Id == 0) receiptOrder.DateOfCreate = DateTime.Now;
 
@@ -100,7 +100,7 @@ namespace api.Controllers
                     });
                     var product = await _dbContext.Product.FirstAsync(x => x.ProductId == receipt.Product.ProductId);
                     product.PriceOfSale = receipt.Product.PriceOfSale;
-                    product.PurchasePrice = receipt.Product.PurchasePrice;
+                    product.PurchasePrice = receipt.PurchasePrice;
                 }
 
                 receiptOrder.ReceiptOrderProduct = receiptOrderProducts;

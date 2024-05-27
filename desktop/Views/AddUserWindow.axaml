@@ -9,7 +9,10 @@
         x:Class="desktop.Views.AddUserWindow" WindowStartupLocation="CenterScreen"
         Title="КДВ. Складской учет" BorderThickness="1" BorderBrush="Black" Foreground="White"
 		TransparencyLevelHint="Transparent" Topmost="True" SystemDecorations="None"
-		Icon="/Assets/icon.ico">
+		Icon="/Assets/icon.ico"
+		InputElement.PointerMoved="InputElement_OnPointerMoved"
+		InputElement.PointerPressed="InputElement_OnPointerPressed"
+		InputElement.PointerReleased="InputElement_OnPointerReleased">
 	<Border CornerRadius="10" Background="{StaticResource MainColor}">
 		
 	<Grid>
@@ -122,7 +125,8 @@
 				<TextBlock Grid.Row="9" FontWeight="Bold" Margin="5">Роль</TextBlock>
 				<ComboBox ItemsSource="{Binding Roles}" SelectedValueBinding="{Binding RoleId}"
 						  SelectedValue="{Binding User.RoleId}"  Grid.Row="10" Margin="5" Grid.Column="0"
-						  DisplayMemberBinding="{Binding Name}"
+						  DisplayMemberBinding="{Binding Name}"  DropDownOpened="ComboBox_DropDownOpened"
+						  DropDownClosed="ComboBox_DropDownClosed_1"
 					  ></ComboBox>
 				<TextBlock Grid.Row="11" Margin="5" FontWeight="Bold">Телефон</TextBlock>
 				<MaskedTextBox Grid.Row="11" Grid.Column="1" Text="{Binding User.Employee.PhoneNumber}"

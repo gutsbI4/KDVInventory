@@ -16,9 +16,20 @@
 	<Style Selector="TextBox:disabled">
 		<Setter Property="Foreground" Value="White" />
 	</Style>
-	<Style Selector="TimePicker:disabled /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Foreground" Value="White" />
+	<Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+		<Setter Property="Opacity" Value="0"></Setter>
 	</Style>
+	<Style Selector="DataGridRowsPresenter#PART_RowsPresenter">
+		<Setter Property="Grid.RowSpan" Value="1"/>
+		<Setter Property="Grid.ColumnSpan" Value="2"/>
+	</Style>
+	<Style Selector="DataGridColumnHeader">
+		<Setter Property="Background" Value="{StaticResource MainColor}"></Setter>
+		<Setter Property="Foreground" Value="White"></Setter>
+	</Style>
+		<Style Selector="TimePicker:disabled /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Foreground" Value="White" />
+		</Style>
 	<Style Selector="CalendarDatePicker:disabled /template/ Button#PART_Button">
 		<Setter Property="TextElement.Foreground" Value="White" />
 	</Style>

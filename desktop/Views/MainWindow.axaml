@@ -10,7 +10,8 @@
         x:DataType="vm:MainViewModel" WindowState="Maximized"
         MinWidth="1100" MinHeight="532" Icon="/Assets/icon.ico"
         Title="КДВ. Складской учет" WindowStartupLocation="CenterScreen"
-		FontFamily="{StaticResource MainFont}">
+		FontFamily="{StaticResource MainFont}"
+		Closed="Window_Closed">
 	
 	<SplitView IsPaneOpen="{Binding IsPaneOpen}"
 			   OpenPaneLength="300"

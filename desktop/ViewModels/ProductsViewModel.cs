@@ -76,7 +76,7 @@ namespace desktop.ViewModels
                         .ToProperty(this, x => x.Products, scheduler: RxApp.MainThreadScheduler);
             LoadingProducts.Subscribe(result =>
             {
-                if (result != null && !_firstLoadCompleted)
+                if (result != null  && !_firstLoadCompleted)
                 {
                     LoadFiltersCommand.Execute().Subscribe();
                     _firstLoadCompleted = true;
@@ -92,8 +92,17 @@ namespace desktop.ViewModels
                 .Where(x => x.Item2 != 0)
                 .Select(x => (x.Item1 + x.Item2 - 1) / x.Item2)
                 .ToProperty(this, x => x.CountPage, out _countPage);
-            OwnersParameters.WhenAnyValue(p => p.PageNumber).Subscribe(_ => RestartLoadProducts());
-            OwnersParameters.WhenAnyValue(p => p.SizePage).Subscribe(_ => GoToFirstPageAndRestartLoadProducts());
+            OwnersParameters.WhenAnyValue(p => p.PageNumber).Subscribe(_ => 
+            {
+                if(Filters == null)
+                _firstLoadCompleted = false;
+                RestartLoadProducts();
+            });
+            OwnersParameters.WhenAnyValue(p => p.SizePage).Subscribe(_ =>
+            {
+                _firstLoadCompleted = false;
+                GoToFirstPageAndRestartLoadProducts();
+            } );
             OwnersParameters.WhenAnyValue(p => p.Filter).Subscribe(_ => GoToFirstPageAndRestartLoadProducts());
             this.WhenAnyValue(x => x.CountPage).Subscribe(count =>
             {
@@ -118,6 +127,7 @@ namespace desktop.ViewModels
 
             //EditProduct
             EditProductCommand = ReactiveCommand.Create<int>(EditProduct);
+            EditProductCommand.ThrownExceptions.Subscribe(async exp => await CommandExc(exp, EditProductCommand));
 
             Search = ReactiveCommand.CreateFromTask(SearchTask);
             Search.IsExecuting.ToProperty(this, x => x.IsSearch, out _isSearch);

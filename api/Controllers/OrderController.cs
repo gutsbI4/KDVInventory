@@ -29,7 +29,7 @@ namespace api.Controllers
             {
                 IQueryable<Order> ordersQuery = _dbContext.Order.Include(p => p.Employee)
                      .ThenInclude(p => p.EmployeeNavigation)
-                     .Include(p => p.OrderProduct);
+                     .Include(p => p.OrderProduct).OrderByDescending(x=>x.OrderId);
                 if (!String.IsNullOrEmpty(ownerParameters.SearchString))
                 {
                     string search = ownerParameters.SearchString.ToLower();
@@ -83,10 +83,9 @@ namespace api.Controllers
                 }
 
                 order.Commentary = orderEditDTO.Commentary;
+                order.DateOfShipment = orderEditDTO.DateOfShipment;
                 order.IsShipment = orderEditDTO.IsShipment;
                 order.Address = orderEditDTO.Address;
-                if (orderEditDTO.IsShipment) order.DateOfShipment = DateTime.Now;
-                else order.DateOfShipment = null;
                 order.EmployeeId = int.Parse(User.FindFirst(ClaimTypes.Name)?.Value);
                 if (orderEditDTO.Id == 0) order.DateOfOrder = DateTime.Now;
 
